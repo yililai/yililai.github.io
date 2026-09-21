@@ -1,3 +1,1354 @@
-Fully Convolutional Networks for Semantic Segmentation：从图像分类走向像素级预测
-1. 从 Classification 到 Dense Prediction
-FCN（Fully Convolutional Networks for Semantic Segmentation）发表于 CVPR 2015，是深度学习语义分割领域非常重要的一篇工作。
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>
+        Fully Convolutional Networks for Semantic Segmentation | Yi Li
+    </title>
+
+    <meta name="description"
+          content="FCN 论文精读：从 Image Classification 到 Dense Prediction，理解现代 Semantic Segmentation 的起点。">
+
+    <meta name="author" content="Yi Li">
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            margin: 0;
+            font-family:
+                -apple-system,
+                BlinkMacSystemFont,
+                "Segoe UI",
+                "Microsoft YaHei",
+                "PingFang SC",
+                Arial,
+                sans-serif;
+
+            color: #222;
+            background: #ffffff;
+            line-height: 1.85;
+        }
+
+        /* =========================
+           顶部导航栏
+        ========================= */
+
+        header {
+            width: 100%;
+            background: rgba(255, 255, 255, 0.96);
+            border-bottom: 1px solid #e8e8e8;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .navbar {
+            max-width: 980px;
+            margin: 0 auto;
+            padding: 17px 24px;
+
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .site-name {
+            font-size: 21px;
+            font-weight: 700;
+            color: #111;
+            text-decoration: none;
+        }
+
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 28px;
+        }
+
+        .nav-links a {
+            color: #333;
+            text-decoration: none;
+            font-size: 15px;
+        }
+
+        .nav-links a:hover {
+            color: #0066cc;
+        }
+
+
+        /* =========================
+           文章主体
+        ========================= */
+
+        .article-container {
+            max-width: 850px;
+            margin: 0 auto;
+            padding: 72px 24px 90px;
+        }
+
+        .article-header {
+            margin-bottom: 55px;
+        }
+
+        .article-category {
+            color: #777;
+            font-size: 14px;
+            margin-bottom: 15px;
+        }
+
+        h1 {
+            font-size: 39px;
+            line-height: 1.35;
+            margin: 0 0 20px;
+            color: #161616;
+            letter-spacing: -0.5px;
+        }
+
+        .subtitle {
+            font-size: 21px;
+            color: #555;
+            margin-bottom: 20px;
+        }
+
+        .meta {
+            font-size: 14px;
+            color: #888;
+        }
+
+        .intro {
+            font-size: 18px;
+            color: #333;
+            margin-top: 40px;
+            padding: 22px 26px;
+            background: #f7f8fa;
+            border-radius: 8px;
+        }
+
+
+        /* =========================
+           正文排版
+        ========================= */
+
+        article h2 {
+            margin-top: 65px;
+            margin-bottom: 22px;
+
+            font-size: 27px;
+            line-height: 1.4;
+
+            color: #171717;
+        }
+
+        article p {
+            font-size: 17px;
+            margin: 18px 0;
+        }
+
+        article strong {
+            color: #111;
+        }
+
+        .term {
+            font-weight: 600;
+            color: #222;
+        }
+
+
+        /* =========================
+           公式 / 概念框
+        ========================= */
+
+        .concept {
+            margin: 28px 0;
+            padding: 22px 25px;
+
+            background: #f8f9fa;
+            border-left: 4px solid #555;
+            border-radius: 3px;
+
+            font-family:
+                "Segoe UI",
+                "Microsoft YaHei",
+                sans-serif;
+
+            font-size: 17px;
+        }
+
+        .formula {
+            margin: 30px 0;
+            padding: 24px;
+
+            text-align: center;
+
+            background: #fafafa;
+            border: 1px solid #eeeeee;
+            border-radius: 6px;
+
+            font-family:
+                "Times New Roman",
+                serif;
+
+            font-size: 20px;
+            line-height: 1.8;
+        }
+
+
+        /* =========================
+           表格
+        ========================= */
+
+        .table-wrapper {
+            width: 100%;
+            overflow-x: auto;
+            margin: 30px 0;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 15px;
+        }
+
+        th,
+        td {
+            padding: 13px 15px;
+            border-bottom: 1px solid #e5e5e5;
+            text-align: left;
+        }
+
+        th {
+            background: #f6f7f8;
+            font-weight: 600;
+        }
+
+
+        /* =========================
+           思考框
+        ========================= */
+
+        .research-note {
+            margin: 35px 0;
+            padding: 25px 28px;
+
+            background: #f7f9fc;
+            border: 1px solid #e5e9ef;
+            border-radius: 8px;
+        }
+
+        .research-note-title {
+            font-weight: 700;
+            margin-bottom: 10px;
+            font-size: 17px;
+        }
+
+
+        /* =========================
+           Paper 信息
+        ========================= */
+
+        .paper-info {
+            margin: 35px 0 45px;
+            padding: 23px 26px;
+
+            border: 1px solid #e6e6e6;
+            border-radius: 8px;
+
+            background: #fff;
+        }
+
+        .paper-info p {
+            margin: 7px 0;
+            font-size: 15px;
+        }
+
+
+        /* =========================
+           底部导航
+        ========================= */
+
+        .article-nav {
+            margin-top: 75px;
+            padding-top: 30px;
+
+            border-top: 1px solid #e5e5e5;
+
+            display: flex;
+            justify-content: space-between;
+            gap: 30px;
+        }
+
+        .article-nav a {
+            color: #333;
+            text-decoration: none;
+            font-size: 15px;
+        }
+
+        .article-nav a:hover {
+            color: #0066cc;
+        }
+
+
+        /* =========================
+           页脚
+        ========================= */
+
+        footer {
+            border-top: 1px solid #ededed;
+            padding: 30px 20px;
+
+            text-align: center;
+            color: #888;
+            font-size: 13px;
+        }
+
+
+        /* =========================
+           手机端
+        ========================= */
+
+        @media (max-width: 700px) {
+
+            .navbar {
+                align-items: flex-start;
+                flex-direction: column;
+                gap: 10px;
+            }
+
+            .nav-links {
+                gap: 17px;
+                flex-wrap: wrap;
+            }
+
+            .article-container {
+                padding-top: 45px;
+            }
+
+            h1 {
+                font-size: 31px;
+            }
+
+            .subtitle {
+                font-size: 18px;
+            }
+
+            article h2 {
+                font-size: 24px;
+            }
+
+            article p {
+                font-size: 16px;
+            }
+
+            .article-nav {
+                flex-direction: column;
+            }
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+<!-- ==========================================
+     Navigation
+=========================================== -->
+
+<header>
+
+    <div class="navbar">
+
+        <a class="site-name" href="../index.html">
+            Yi Li
+        </a>
+
+        <nav class="nav-links">
+
+            <a href="../index.html#about">
+                About
+            </a>
+
+            <a href="../index.html#research">
+                Research
+            </a>
+
+            <a href="../index.html#publications">
+                Publications
+            </a>
+
+            <a href="../index.html#blog">
+                Blog
+            </a>
+
+            <a href="../index.html#contact">
+                Contact
+            </a>
+
+        </nav>
+
+    </div>
+
+</header>
+
+
+
+<!-- ==========================================
+     Article
+=========================================== -->
+
+<main class="article-container">
+
+<article>
+
+
+<!-- =========================
+     Header
+========================= -->
+
+<div class="article-header">
+
+    <div class="article-category">
+        Paper Reading · Semantic Segmentation
+    </div>
+
+    <h1>
+        Fully Convolutional Networks for Semantic Segmentation
+    </h1>
+
+    <div class="subtitle">
+        从 Image Classification 到 Dense Prediction
+    </div>
+
+    <div class="meta">
+        Yi Li · 2026-09-21
+    </div>
+
+
+    <div class="intro">
+
+        FCN（Fully Convolutional Network）最重要的意义，
+        并不在于今天它仍然具有多高的 segmentation performance，
+        而在于它第一次系统地将用于
+        <strong>Image Classification</strong>
+        的 CNN 转化为能够进行
+        <strong>pixel-level Dense Prediction</strong>
+        的网络。
+
+        它建立了现代 Semantic Segmentation 的基本范式：
+
+        从“整张图像是什么”，走向“图像中的每一个 pixel 是什么”。
+
+    </div>
+
+</div>
+
+
+
+<!-- =========================
+     Paper Information
+========================= -->
+
+<div class="paper-info">
+
+    <p>
+        <strong>Paper：</strong>
+        Fully Convolutional Networks for Semantic Segmentation
+    </p>
+
+    <p>
+        <strong>Authors：</strong>
+        Jonathan Long, Evan Shelhamer, Trevor Darrell
+    </p>
+
+    <p>
+        <strong>Conference：</strong>
+        CVPR 2015
+    </p>
+
+    <p>
+        <strong>Task：</strong>
+        Semantic Segmentation
+    </p>
+
+    <p>
+        <strong>核心关键词：</strong>
+        Fully Convolutional Network · Dense Prediction · Upsampling · Skip Connection
+    </p>
+
+</div>
+
+
+
+<!-- =========================
+     Section 1
+========================= -->
+
+<h2>
+    1. 为什么需要 FCN：从 Classification 到 Dense Prediction
+</h2>
+
+
+<p>
+    深度 CNN 最早取得巨大成功的任务主要是
+    <span class="term">Image Classification</span>。
+    对于 classification，一张图片经过 convolution、pooling
+    和 Fully Connected Layer 后，最终只需要输出一个类别：
+</p>
+
+
+<div class="formula">
+
+    Image
+    &nbsp; → &nbsp;
+    CNN
+    &nbsp; → &nbsp;
+    Class
+
+</div>
+
+
+<p>
+    例如输入一张图片，模型只需要判断它属于
+    <em>cat</em>、<em>dog</em> 或其他类别。
+    在这个任务中，我们关心的是：
+</p>
+
+
+<div class="concept">
+
+    <strong>What is in the image?</strong>
+
+</div>
+
+
+<p>
+    但 Semantic Segmentation 的目标完全不同。
+    它不仅需要知道图像中包含哪些类别，
+    还需要判断图像中
+    <strong>每一个 pixel 属于什么 category</strong>。
+</p>
+
+
+<div class="formula">
+
+    Image
+    &nbsp; → &nbsp;
+    H × W × C
+
+</div>
+
+
+<p>
+    因此 segmentation 属于典型的
+    <span class="term">Dense Prediction</span>：
+    网络不再只输出一个 image-level label，
+    而需要生成具有 spatial structure 的 prediction map。
+</p>
+
+
+<p>
+    这也暴露出了传统 classification network 的问题。
+    CNN 前面的 convolution layer 仍然保留二维 spatial structure，
+    但在进入 Fully Connected Layer 后，
+    feature map 会被转换为固定长度的 feature vector。
+</p>
+
+
+<p>
+    对于 classification 来说这没有问题，
+    因为最终只需要知道“是什么”。
+    但对于 segmentation 来说，
+    我们还必须知道目标
+    <strong>“在哪里”</strong>。
+</p>
+
+
+<p>
+    因此 FCN 所面对的核心问题可以概括为：
+</p>
+
+
+<div class="concept">
+
+    如何把一个只能进行 image-level classification 的 CNN，
+    转换成可以对整张图像进行 pixel-level prediction 的网络？
+
+</div>
+
+
+
+<!-- =========================
+     Section 2
+========================= -->
+
+<h2>
+    2. FCN 的核心：把 Classification Network 改造成 Fully Convolutional Network
+</h2>
+
+
+<p>
+    FCN 最关键的改变其实非常直接：
+</p>
+
+
+<div class="concept">
+
+    <strong>
+        Fully Connected Layer
+        &nbsp; → &nbsp;
+        Convolution Layer
+    </strong>
+
+</div>
+
+
+<p>
+    Fully Connected Layer 看起来和 convolution 完全不同，
+    但如果从 tensor operation 的角度理解，
+    Fully Connected Layer 实际上可以等价地写成 convolution。
+</p>
+
+
+<p>
+    假设某一层 feature map 的尺寸为：
+</p>
+
+
+<div class="formula">
+
+    7 × 7 × 512
+
+</div>
+
+
+<p>
+    如果后面连接一个 4096-dimensional Fully Connected Layer，
+    那么它实际上可以等价地转换为一个
+    kernel size 为
+    <strong>7 × 7</strong>
+    的 convolution。
+</p>
+
+
+<p>
+    这样做以后，网络不再必须把 feature map 压缩成一个
+    image-level feature vector，
+    而能够继续保持 spatial structure。
+</p>
+
+
+<p>
+    网络因此从：
+</p>
+
+
+<div class="formula">
+
+    Image
+    &nbsp; → &nbsp;
+    Feature
+    &nbsp; → &nbsp;
+    Class
+
+</div>
+
+
+<p>
+    转换为：
+</p>
+
+
+<div class="formula">
+
+    Image
+    &nbsp; → &nbsp;
+    Feature Map
+    &nbsp; → &nbsp;
+    Spatial Prediction
+
+</div>
+
+
+<p>
+    这也是
+    <strong>Fully Convolutional Network</strong>
+    这一名称的来源。
+</p>
+
+
+<p>
+    更重要的是，
+    网络经过 fully convolutional 化之后，
+    理论上可以接受不同尺寸的输入，
+    并输出与输入 spatial size 对应的 prediction map。
+</p>
+
+
+<p>
+    这一步实际上完成了 segmentation 最重要的范式转变：
+</p>
+
+
+<div class="concept">
+
+    CNN 不再只学习一个 image-level representation，
+    而开始学习可以用于 pixel-level prediction 的
+    spatial representation。
+
+</div>
+
+
+
+<!-- =========================
+     Section 3
+========================= -->
+
+<h2>
+    3. 从 Coarse Prediction 到 Precise Segmentation：Upsampling 与 Skip Connection
+</h2>
+
+
+<p>
+    把 Fully Connected Layer 改成 convolution 以后，
+    segmentation 仍然没有真正完成。
+</p>
+
+
+<p>
+    原因在于传统 CNN 中存在大量 pooling 和 stride operation，
+    feature map 的 resolution 会不断下降。
+</p>
+
+
+<div class="formula">
+
+    512 × 512
+    &nbsp; → &nbsp;
+    256 × 256
+    &nbsp; → &nbsp;
+    128 × 128
+    &nbsp; → &nbsp;
+    64 × 64
+    &nbsp; → &nbsp;
+    ...
+
+</div>
+
+
+<p>
+    深层 feature 虽然具有更强的 semantic information，
+    但 spatial resolution 已经非常低。
+    因此 FCN 需要通过
+    <span class="term">Upsampling</span>
+    将 coarse prediction 恢复到原始图像大小。
+</p>
+
+
+<p>
+    论文中使用了可学习的 upsampling operation。
+    早期文献经常称之为
+    <strong>Deconvolution</strong>，
+    现在更常见的名称是
+    <strong>Transposed Convolution</strong>。
+</p>
+
+
+<p>
+    于是最基本的 segmentation pipeline 形成了：
+</p>
+
+
+<div class="formula">
+
+    Image
+    <br>
+    ↓
+    <br>
+    CNN Feature Extraction
+    <br>
+    ↓
+    <br>
+    Low-resolution Prediction
+    <br>
+    ↓
+    <br>
+    Upsampling
+    <br>
+    ↓
+    <br>
+    Segmentation Map
+
+</div>
+
+
+<p>
+    但如果只是把最后一层低分辨率 feature 直接放大，
+    segmentation boundary 往往非常粗糙。
+</p>
+
+
+<p>
+    这里出现了 segmentation 中一个非常重要，
+    并且直到今天仍然存在的问题：
+</p>
+
+
+<div class="concept">
+
+    <strong>Deep Feature：</strong>
+    semantic information 强，但 spatial resolution 低。
+    <br><br>
+
+    <strong>Shallow Feature：</strong>
+    spatial detail 丰富，但 semantic information 相对较弱。
+
+</div>
+
+
+<p>
+    换句话说，
+    网络越往深层越知道
+    <strong>“这是什么”</strong>，
+    但越来越难知道
+    <strong>“精确在哪里”</strong>。
+</p>
+
+
+<p>
+    为了同时获得 semantic information 和 spatial detail，
+    FCN 开始融合不同层级的 feature，
+    这就是后面 segmentation 网络中非常经典的
+    <span class="term">Skip Connection</span>
+    思想。
+</p>
+
+
+<p>
+    论文中的
+    <strong>FCN-32s、FCN-16s 和 FCN-8s</strong>
+    可以理解为这一思想不断增强的三个版本。
+</p>
+
+
+<div class="table-wrapper">
+
+<table>
+
+    <thead>
+
+        <tr>
+            <th>Model</th>
+            <th>主要特点</th>
+            <th>Spatial Detail</th>
+        </tr>
+
+    </thead>
+
+    <tbody>
+
+        <tr>
+            <td>FCN-32s</td>
+            <td>主要使用最深层 feature，再进行大倍率 upsampling</td>
+            <td>较粗</td>
+        </tr>
+
+        <tr>
+            <td>FCN-16s</td>
+            <td>进一步融合 intermediate feature</td>
+            <td>更精细</td>
+        </tr>
+
+        <tr>
+            <td>FCN-8s</td>
+            <td>进一步加入更高 resolution 的 shallow feature</td>
+            <td>最好</td>
+        </tr>
+
+    </tbody>
+
+</table>
+
+</div>
+
+
+<p>
+    从今天来看，
+    Skip Connection 已经成为很常见的设计。
+    但在当时，
+    它非常清楚地揭示了 segmentation 中的一个基本矛盾：
+</p>
+
+
+<div class="concept">
+
+    Segmentation 不仅需要 semantic understanding，
+    还需要 precise localization。
+
+</div>
+
+
+<p>
+    这一思想后来在
+    <strong>U-Net</strong>
+    中被进一步强化，
+    并逐渐成为 Encoder–Decoder segmentation architecture
+    的核心设计之一。
+</p>
+
+
+
+<!-- =========================
+     Section 4
+========================= -->
+
+<h2>
+    4. FCN 真正解决了什么，又没有解决什么？
+</h2>
+
+
+<p>
+    如果只从今天的 performance 来看，
+    FCN 已经是一个非常简单的 segmentation model。
+    但评价一篇经典论文，
+    更重要的是看它是否改变了一个领域解决问题的方式。
+</p>
+
+
+<p>
+    FCN 最大的贡献并不是某一个具体 module，
+    而是建立了现代 Semantic Segmentation 最基本的范式：
+</p>
+
+
+<div class="formula">
+
+    Image
+    &nbsp; → &nbsp;
+    Feature Map
+    &nbsp; → &nbsp;
+    Dense Prediction
+
+</div>
+
+
+<p>
+    在这个框架下，
+    segmentation 不再需要把一张图切成大量 patches
+    分别进行 classification，
+    而能够通过一次 forward pass，
+    直接得到整幅图像的 pixel-level prediction。
+</p>
+
+
+<p>
+    但是 FCN 同样暴露出了两个非常明显的问题。
+</p>
+
+
+<p>
+    第一个问题是
+    <strong>small object information 容易在 downsampling 中丢失</strong>。
+</p>
+
+
+<p>
+    对于一个尺寸很大的 object，
+    即使经过多次 downsampling，
+    它仍然能够在 deep feature map 中占据明显区域。
+    但对于尺寸只有几个 pixels 的 small object：
+</p>
+
+
+<div class="formula">
+
+    4 × 4
+    &nbsp; → &nbsp;
+    2 × 2
+    &nbsp; → &nbsp;
+    1 × 1
+    &nbsp; → &nbsp;
+    ?
+
+</div>
+
+
+<p>
+    经过连续 pooling 或 stride operation 后，
+    目标可能只剩下极少的响应，
+    甚至直接消失。
+</p>
+
+
+<p>
+    后面的 upsampling 能够放大 feature map，
+    却不能真正恢复已经完全丢失的信息。
+</p>
+
+
+<p>
+    第二个问题更加本质：
+</p>
+
+
+<div class="concept">
+
+    <strong>
+        FCN 预测的是 Pixel Category，
+        而不是 Object Identity。
+    </strong>
+
+</div>
+
+
+<p>
+    FCN 学习的是：
+</p>
+
+
+<div class="formula">
+
+    Pixel<sub>i</sub>
+    &nbsp; → &nbsp;
+    Class<sub>i</sub>
+
+</div>
+
+
+<p>
+    例如对于细胞核，
+    网络可以判断某个 pixel 属于
+    <em>nucleus</em>，
+    但它并不知道：
+</p>
+
+
+<div class="formula">
+
+    Pixel A → Nucleus 1
+    <br><br>
+    Pixel B → Nucleus 2
+
+</div>
+
+
+<p>
+    当两个同类别 object 紧密接触时，
+    semantic segmentation 很容易把它们预测成一个连续区域。
+</p>
+
+
+<p>
+    因此 FCN 能回答：
+</p>
+
+
+<div class="concept">
+
+    “这个 pixel 是什么？”
+
+</div>
+
+
+<p>
+    但它没有回答：
+</p>
+
+
+<div class="concept">
+
+    “这个 pixel 属于哪一个 object？”
+
+</div>
+
+
+<p>
+    这就是从
+    <strong>Semantic Segmentation</strong>
+    继续走向
+    <strong>Instance Segmentation</strong>
+    时必须解决的问题。
+</p>
+
+
+
+<!-- =========================
+     Section 5
+========================= -->
+
+<h2>
+    5. 从 FCN 看 Dense Object Segmentation
+</h2>
+
+
+<p>
+    对我目前关注的
+    <strong>Dense Object Segmentation</strong>
+    来说，
+    FCN 最值得思考的地方并不是它具体使用了什么 backbone，
+    而是它暴露出了 segmentation 中两个不同层次的问题：
+</p>
+
+
+<div class="research-note">
+
+    <div class="research-note-title">
+        ① Spatial Resolution
+    </div>
+
+    Dense small objects 对 fine-grained spatial information
+    非常敏感。
+
+    多次 downsampling 很容易使 small object feature
+    被削弱甚至消失。
+
+</div>
+
+
+<div class="research-note">
+
+    <div class="research-note-title">
+        ② Object Representation
+    </div>
+
+    即使已经非常准确地预测 foreground pixels，
+    也并不意味着模型知道这些 pixels
+    分别属于哪一个 object。
+
+</div>
+
+
+<p>
+    第一个问题关注的是：
+</p>
+
+
+<div class="concept">
+
+    <strong>
+        如何尽可能保存 small object 的 spatial information？
+    </strong>
+
+</div>
+
+
+<p>
+    这条路线后来会自然发展到
+    multi-scale feature、Encoder–Decoder、
+    Skip Connection、FPN 等设计。
+</p>
+
+
+<p>
+    第二个问题则进一步指向：
+</p>
+
+
+<div class="concept">
+
+    <strong>
+        如何形成真正具有 object identity 的 representation？
+    </strong>
+
+</div>
+
+
+<p>
+    这正是后续
+    <strong>Mask R-CNN、StarDist、HoVer-Net、DETR、MaskFormer</strong>
+    等工作逐渐开始回答的问题。
+</p>
+
+
+<p>
+    从这个角度来看，
+    FCN 可以被看作整个现代 segmentation 演化链条的起点：
+</p>
+
+
+<div class="formula">
+
+    Pixel Classification
+    <br>
+    ↓
+    <br>
+    Better Spatial Representation
+    <br>
+    ↓
+    <br>
+    Instance Separation
+    <br>
+    ↓
+    <br>
+    Object-level Representation
+
+</div>
+
+
+<p>
+    FCN 首先完成了最关键的一步：
+    让 CNN 从
+    <strong>image-level classification</strong>
+    进入了
+    <strong>pixel-level dense prediction</strong>。
+</p>
+
+
+<p>
+    但对于 dense object segmentation 来说，
+    这只是问题的开始。
+</p>
+
+
+<div class="research-note">
+
+    <div class="research-note-title">
+        My Takeaway
+    </div>
+
+    <strong>
+        FCN 解决了“每一个 pixel 是什么”的问题，
+        但没有解决“这些 pixels 如何组成不同 objects”的问题。
+    </strong>
+
+    <br><br>
+
+    对于 dense small object segmentation，
+    后者可能比单纯提高 pixel classification accuracy
+    更值得关注。
+
+</div>
+
+
+<p>
+    下一篇将继续阅读
+    <strong>U-Net</strong>。
+    如果说 FCN 建立了 Dense Prediction 的基本框架，
+    那么 U-Net 所进一步回答的问题就是：
+</p>
+
+
+<div class="concept">
+
+    在连续 downsampling 已经损失大量 spatial detail 的情况下，
+    如何更有效地恢复精细的 segmentation result？
+
+</div>
+
+
+
+<!-- =========================
+     Summary
+========================= -->
+
+<h2>
+    Summary
+</h2>
+
+
+<div class="table-wrapper">
+
+<table>
+
+    <tbody>
+
+        <tr>
+            <th>Paper</th>
+            <td>Fully Convolutional Networks for Semantic Segmentation</td>
+        </tr>
+
+        <tr>
+            <th>Task</th>
+            <td>Semantic Segmentation</td>
+        </tr>
+
+        <tr>
+            <th>核心范式</th>
+            <td>Dense Prediction</td>
+        </tr>
+
+        <tr>
+            <th>关键设计</th>
+            <td>Fully Convolutional、Upsampling、Skip Connection</td>
+        </tr>
+
+        <tr>
+            <th>Representation</th>
+            <td>Pixel-level Category Representation</td>
+        </tr>
+
+        <tr>
+            <th>Small Object</th>
+            <td>容易受到 Downsampling 影响</td>
+        </tr>
+
+        <tr>
+            <th>Instance Identity</th>
+            <td>没有显式建模</td>
+        </tr>
+
+        <tr>
+            <th>对我的启发</th>
+            <td>
+                Spatial Precision 与 Object Identity 是两个不同层次的问题
+            </td>
+        </tr>
+
+    </tbody>
+
+</table>
+
+</div>
+
+
+
+<!-- =========================
+     Bottom Navigation
+========================= -->
+
+<div class="article-nav">
+
+    <a href="../index.html#blog">
+        ← Back to Blog
+    </a>
+
+    <!-- 等写完 U-Net 后，把 # 改成 unet.html -->
+    <a href="#">
+        Next: U-Net →
+    </a>
+
+</div>
+
+
+</article>
+
+</main>
+
+
+
+<!-- ==========================================
+     Footer
+=========================================== -->
+
+<footer>
+
+    © 2026 Yi Li ·
+    Built with GitHub Pages
+
+</footer>
+
+
+</body>
+
+</html>
