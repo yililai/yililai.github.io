@@ -67,13 +67,16 @@ def main():
         if not path.is_file():
             errors.append('Missing documented figure: ' + entry['file'])
             continue
-        tree = ET.parse(path)
-        if 'viewBox' not in tree.getroot().attrib:
-            errors.append('SVG missing viewBox: ' + entry['file'])
+        if path.suffix == '.svg':
+            tree = ET.parse(path)
+            if 'viewBox' not in tree.getroot().attrib:
+                errors.append('SVG missing viewBox: ' + entry['file'])
+        elif path.suffix == '.png' and not path.read_bytes().startswith(b'\x89PNG\r\n\x1a\n'):
+            errors.append('Invalid PNG file: ' + entry['file'])
         if not entry.get('source_url') or not entry.get('verified'):
             errors.append('Incomplete source record: ' + entry['file'])
-    for path in (ROOT / 'assets/figures').rglob('*.svg'):
-        if path.resolve() not in documented:
+    for path in (ROOT / 'assets/figures').rglob('*'):
+        if path.suffix.lower() in ('.svg', '.png', '.jpg', '.webp') and path.resolve() not in documented:
             errors.append('Figure missing source record: ' + str(path.relative_to(ROOT)))
     for warning in warnings:
         print('KNOWN LEGACY ISSUE: ' + warning)

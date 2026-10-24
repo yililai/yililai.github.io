@@ -1,15 +1,18 @@
 {
-  "policy": "Paper availability and repository code licenses do not establish paper-image reuse rights. Use independently composed diagrams until explicit figure permission is verified.",
+  "policy": "Prefer verified paper figures for concise method explanations. Credit authors, link the paper and license, and state any changes. Original schematic fallbacks remain available when permission is unconfirmed.",
   "permission_review": {
-    "solo": "Springer chapter lists © 2020 Springer Nature Switzerland AG and a permissions request link; explicit permission for blog image reuse not established.",
-    "solov2": "Official proceedings and author repository checked; a figure-specific reuse grant applicable to this blog was not established. This is uncertainty, not a claim that reuse is forbidden.",
-    "code": "WXinlong/SOLO LICENSE begins SOLO for non-commercial purposes; not treated as a license for paper figures.",
+    "solo": "arXiv:1912.04488v3 explicitly identifies CC BY-NC-SA 4.0. Use figures from this licensed version, rather than assuming the separate Springer version has identical reuse terms.",
+    "solov2": "arXiv:2003.10152v3 explicitly identifies CC BY-NC-SA 4.0. Figures downloaded from that version.",
+    "license_url": "https://creativecommons.org/licenses/by-nc-sa/4.0/",
+    "conditions": "Attribute creators, link source and license, identify changes, use noncommercially, and retain the same license for adaptations. Third-party exceptions, if separately identified, must be respected.",
     "reviewed_urls": [
-      "https://link.springer.com/chapter/10.1007/978-3-030-58523-5_38",
-      "https://proceedings.neurips.cc/paper/2020/hash/cd3afef9b8b89558cd56638c3631868a-Abstract.html",
-      "https://github.com/WXinlong/SOLO/blob/master/LICENSE",
-      "https://www.taokong.org/projects/solo/"
-    ]
+      "https://arxiv.org/abs/1912.04488",
+      "https://arxiv.org/html/1912.04488v3",
+      "https://arxiv.org/abs/2003.10152",
+      "https://arxiv.org/html/2003.10152v3",
+      "https://creativecommons.org/licenses/by-nc-sa/4.0/"
+    ],
+    "verified": "2026-10-24"
   },
   "figures": [
     {
@@ -21,7 +24,8 @@
       "reproduced_paper_artwork": false,
       "third_party_image_permission": "not relied upon; independently composed vector diagram",
       "reuse_license": "No additional license granted by this record",
-      "verified": "2026-10-24"
+      "verified": "2026-10-24",
+      "used_in_current_articles": false
     },
     {
       "file": "solo/slot-conflict.svg",
@@ -32,7 +36,8 @@
       "reproduced_paper_artwork": false,
       "third_party_image_permission": "not relied upon; independently composed vector diagram",
       "reuse_license": "No additional license granted by this record",
-      "verified": "2026-10-24"
+      "verified": "2026-10-24",
+      "used_in_current_articles": false
     },
     {
       "file": "solov2/dynamic-mask.svg",
@@ -43,7 +48,8 @@
       "reproduced_paper_artwork": false,
       "third_party_image_permission": "not relied upon; independently composed vector diagram",
       "reuse_license": "No additional license granted by this record",
-      "verified": "2026-10-24"
+      "verified": "2026-10-24",
+      "used_in_current_articles": false
     },
     {
       "file": "solov2/matrix-nms.svg",
@@ -54,7 +60,93 @@
       "reproduced_paper_artwork": false,
       "third_party_image_permission": "not relied upon; independently composed vector diagram",
       "reuse_license": "No additional license granted by this record",
-      "verified": "2026-10-24"
+      "verified": "2026-10-24",
+      "used_in_current_articles": false
+    },
+    {
+      "file": "solo/paper-framework.png",
+      "type": "paper-figure",
+      "creator": "Xinlong Wang, Tao Kong, Chunhua Shen, Yuning Jiang, Lei Li",
+      "paper_title": "SOLO: Segmenting Objects by Locations",
+      "figure": "Figure 2",
+      "source_version": "arXiv:1912.04488v3",
+      "source_url": "https://arxiv.org/html/1912.04488v3",
+      "asset_url": "https://arxiv.org/html/1912.04488v3/framework_new.png",
+      "reproduced_paper_artwork": true,
+      "reuse_license": "CC BY-NC-SA 4.0",
+      "license_url": "https://creativecommons.org/licenses/by-nc-sa/4.0/",
+      "changes": "Image bytes unchanged; source figure panels shown separately where applicable. Chinese explanatory text and captions supplied alongside.",
+      "used_in_current_articles": true,
+      "verified": "2026-10-24",
+      "sha256": "a2a5cebc130a221a80932909e60a1e3398c99f2febd0e2253d7fe990bb4a63aa"
+    },
+    {
+      "file": "solo/paper-head.svg",
+      "type": "paper-figure",
+      "creator": "Xinlong Wang, Tao Kong, Chunhua Shen, Yuning Jiang, Lei Li",
+      "paper_title": "SOLO: Segmenting Objects by Locations",
+      "figure": "Figure 3",
+      "source_version": "arXiv:1912.04488v3",
+      "source_url": "https://arxiv.org/html/1912.04488v3",
+      "asset_url": "https://arxiv.org/html/1912.04488v3/fig_head.svg",
+      "reproduced_paper_artwork": true,
+      "reuse_license": "CC BY-NC-SA 4.0",
+      "license_url": "https://creativecommons.org/licenses/by-nc-sa/4.0/",
+      "changes": "Image bytes unchanged; source figure panels shown separately where applicable. Chinese explanatory text and captions supplied alongside.",
+      "used_in_current_articles": true,
+      "verified": "2026-10-24",
+      "sha256": "6277e068f61f46ab85a6f505a4752923735da01b1f65c795d183d42c68d26287"
+    },
+    {
+      "file": "solov2/paper-solo-head.png",
+      "type": "paper-figure",
+      "creator": "Xinlong Wang, Rufeng Zhang, Tao Kong, Lei Li, Chunhua Shen",
+      "paper_title": "SOLOv2: Dynamic and Fast Instance Segmentation",
+      "figure": "Figure 2(a)",
+      "source_version": "arXiv:2003.10152v3",
+      "source_url": "https://arxiv.org/html/2003.10152v3",
+      "asset_url": "https://arxiv.org/html/2003.10152v3/plain_head.png",
+      "reproduced_paper_artwork": true,
+      "reuse_license": "CC BY-NC-SA 4.0",
+      "license_url": "https://creativecommons.org/licenses/by-nc-sa/4.0/",
+      "changes": "Image bytes unchanged; source figure panels shown separately where applicable. Chinese explanatory text and captions supplied alongside.",
+      "used_in_current_articles": true,
+      "verified": "2026-10-24",
+      "sha256": "811b3e5a9d88b56a5dc99544c5e12e6e6fb5a60e8d719a17f43c66515459443f"
+    },
+    {
+      "file": "solov2/paper-dynamic-head.png",
+      "type": "paper-figure",
+      "creator": "Xinlong Wang, Rufeng Zhang, Tao Kong, Lei Li, Chunhua Shen",
+      "paper_title": "SOLOv2: Dynamic and Fast Instance Segmentation",
+      "figure": "Figure 2(b)",
+      "source_version": "arXiv:2003.10152v3",
+      "source_url": "https://arxiv.org/html/2003.10152v3",
+      "asset_url": "https://arxiv.org/html/2003.10152v3/dynamic_head.png",
+      "reproduced_paper_artwork": true,
+      "reuse_license": "CC BY-NC-SA 4.0",
+      "license_url": "https://creativecommons.org/licenses/by-nc-sa/4.0/",
+      "changes": "Image bytes unchanged; source figure panels shown separately where applicable. Chinese explanatory text and captions supplied alongside.",
+      "used_in_current_articles": true,
+      "verified": "2026-10-24",
+      "sha256": "ee561e96fd83e78347514e35d450251f22de734cb77f5842ef5196cd7d5d836a"
+    },
+    {
+      "file": "solov2/paper-mask-feature.svg",
+      "type": "paper-figure",
+      "creator": "Xinlong Wang, Rufeng Zhang, Tao Kong, Lei Li, Chunhua Shen",
+      "paper_title": "SOLOv2: Dynamic and Fast Instance Segmentation",
+      "figure": "Figure 5",
+      "source_version": "arXiv:2003.10152v3",
+      "source_url": "https://arxiv.org/html/2003.10152v3",
+      "asset_url": "https://arxiv.org/html/2003.10152v3/mask_feature_branch.svg",
+      "reproduced_paper_artwork": true,
+      "reuse_license": "CC BY-NC-SA 4.0",
+      "license_url": "https://creativecommons.org/licenses/by-nc-sa/4.0/",
+      "changes": "Image bytes unchanged; source figure panels shown separately where applicable. Chinese explanatory text and captions supplied alongside.",
+      "used_in_current_articles": true,
+      "verified": "2026-10-24",
+      "sha256": "f585bd6f4550c9b8d4f05117a186e6cade2fa96c11e03b002665e1800beb9ae4"
     }
   ]
 }

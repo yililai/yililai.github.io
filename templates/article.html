@@ -17,18 +17,20 @@
   </nav>
 </div></header>
 <main class="article-container" id="article"><article>
-  <div class="eyebrow">Paper Reading · Instance Segmentation · SOLO 系列 {{series}}</div>
+  <div class="eyebrow">图解论文 · {{venue}} · {{status}}</div>
   <h1>{{title}}</h1>
   <p class="subtitle">{{subtitle}}</p>
-  <p class="meta">Yi Li · {{date}} · 信息核验：{{verified}}</p>
-  <div class="paper-info">
+  <p class="meta">Yi Li · {{date}} · SOLO 系列 {{series}}</p>
+  <nav class="paper-links" aria-label="论文资源"><a href="{{pdf_url}}">全文 PDF ↗</a><a href="{{code_url}}">官方代码 ↗</a><a href="{{publication_url}}">正式出版 ↗</a><a href="{{paper_url}}">arXiv ↗</a></nav>
+  <details class="paper-info">
+    <summary>作者、版本与图片许可</summary>
     <p><strong>论文：</strong>{{paper_title}}</p>
     <p><strong>作者：</strong>{{authors}}</p>
-    <p><strong>发表状态：</strong><span class="status">{{status}} · {{venue}}</span></p>
     <p><strong>版本说明：</strong>{{version_note}}</p>
-    <p><a href="{{paper_url}}">论文信息 / arXiv</a> · <a href="{{pdf_url}}">阅读全文 PDF</a> · <a href="{{publication_url}}">正式出版记录</a> · <a href="{{code_url}}">作者官方代码</a></p>
-    <p><strong>代码许可：</strong>{{code_license}}。论文图片的权限另行核验。</p>
-  </div>
+    <p><strong>图片：</strong>采用 arXiv v3 原图；该版本标注 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a>。图注标明作者、出处与修改情况；图片及其改编沿用该许可。</p>
+    <p><strong>代码许可：</strong>{{code_license}}。</p>
+    <p>资料核验：{{verified}}。</p>
+  </details>
   {{body}}
   <nav class="article-nav" aria-label="文章导航">{{article_nav}}</nav>
 </article></main>

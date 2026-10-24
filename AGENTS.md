@@ -1,6 +1,7 @@
 # Academic blog maintenance
 
-- Preserve existing articles and permanent URLs. Do not replace a completed article with a summary. Never delete existing files without explicit user confirmation.
+- Preserve existing articles and permanent URLs unless the user explicitly requests a rewrite. Never delete existing files without explicit user confirmation.
+- Default to concise, visual, method-focused readings: verified paper figures, a few connected explanations, and simple process cards. Omit experiment tables, ablation proposals and research extensions unless requested. Put detailed author/version/license information in a collapsible block.
 - Read `docs/BLOG_WORKFLOW.md` before adding or editing a post. Use primary paper / publisher / author sources; distinguish published, accepted, and preprint status.
 - Edit generated article sources in `content/`, metadata in `data/posts.json`, and shared markup in `templates/article.html`. Run `python scripts/build_blog.py` and commit generated outputs together.
 - Keep legacy FCN and U-Net pages unchanged until a deliberate, reviewed migration is authorized. The generator must not write legacy pages or rebuild homepage content outside its marked area.

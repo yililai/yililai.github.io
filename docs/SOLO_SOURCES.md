@@ -12,20 +12,18 @@
 | 核验全文 | https://lileicc.github.io/pubs/wang2020solo.pdf | https://proceedings.neurips.cc/paper/2020/file/cd3afef9b8b89558cd56638c3631868a-Paper.pdf |
 | 官方代码 | https://github.com/WXinlong/SOLO | https://github.com/WXinlong/SOLO；另有作者团队 AdelaiDet 实现 |
 
-## 数值与定位
+## 图解版图片来源与许可
 
-SOLO：作者公开全文 Table 1 使用 6×（72 epochs）主结果，COCO test-dev，ResNet-101-FPN：SOLO AP 37.8，增强版 Mask R-CNN* AP 37.8。Table 2 的 val2017 单层网格 S=12/24/36 AP 27.2/29.0/28.6，Pyramid AP 35.8。Table 3 的 0/1 层 CoordConv AP 32.2/35.8。主结果与消融训练设置不同，不跨表作因果相加。
+两篇 arXiv v3 的论文页面均标注 CC BY-NC-SA 4.0：
 
-SOLOv2：正式全文 Table 1，COCO test-dev，ResNet-101-FPN，SOLO 37.8、SOLOv2 39.7 AP。Table 3(a)，val2017，1×1×256 / 1×1×512 核 AP 37.8 / 37.7。Table 3(d)，Separate / Unified AP 37.3 / 37.8。Table 3(c)，Hard-NMS / Matrix NMS AP 36.3 / 36.6，NMS 衰减步骤耗时 9 / <1 ms。第 3.1.2 节说明该计时排除 IoU 矩阵构造，正文保留此限定。
+- SOLO：https://arxiv.org/html/1912.04488v3 ，页面 License 链接；正文 Fig. 2、Fig. 3。
+- SOLOv2：https://arxiv.org/html/2003.10152v3 ，页面 License 链接；正文 Fig. 2(a)、Fig. 2(b)、附录 Fig. 5。
+- 许可正文入口：https://creativecommons.org/licenses/by-nc-sa/4.0/ 。允许非商用分享与改编，要求署名、链接许可、标明修改，改编沿用相同许可。
 
-## 权限审查
+本次使用 arXiv HTML 中的 5 个原图文件，保留下载字节，未裁剪、涂改或重绘；SOLOv2 的两幅子图以独立面板展示。每幅图旁提供原论文、作者简称、许可和修改情况，完整作者列表位于可展开资料区。逐图下载地址、来源版本、许可和 SHA-256 见 assets/figures/sources.json。图片及其改编沿用 CC BY-NC-SA 4.0；该说明不为第三方内容或整个网站重新授权。
 
-SOLO Springer 页面列明 © 2020 Springer Nature Switzerland AG，并提供 Reprints and permissions 链接。未取得明确适用于本站原图转载的授权。SOLOv2 的官方 proceedings、论文入口与作者仓库已查看，未确认适用于本站论文原图的明确转载条款；这不等于断言所有原图均不可转载。
+此前只查看了出版方和代码仓库许可，遗漏了 arXiv 版本的明确许可，导致采用全部原创示意图。此次已纠正该审查结论；旧 SVG 文件保留但不再用于正文。
 
-WXinlong/SOLO 的 LICENSE 开头标注 “SOLO for non-commercial purposes”，并含源代码 / 二进制再分发保留说明。本项目没有复制其代码或图片，也不将这份代码许可视作论文插图许可。
+## 内容范围
 
-使用的四张 SVG 均为独立布局的原创概念图，图注注明论文来源与分析属性；无原图截图、裁切、描摹或第三方图片文件。图源逐图记录于 `assets/figures/sources.json`。
-
-## 区分原文与本文贡献
-
-GT—槽位二部图匹配诊断、固定图像下 Z=KF 的线性秩观察、医学任务的分层诊断及新增消融方案均为文章分析。它们不是两篇原论文已有的细胞核实验，也没有在本项目训练验证；不作新颖性或性能承诺。
+按用户要求，正文改为简短的图解方法介绍，移除实验数值、结果表、消融建议及医学任务延伸。保留核心表示、方法流程、原图图注、全文与官方代码入口。原图中的符号由相邻中文说明解释；新增流程卡片为本站排版，未冒充论文原图。
