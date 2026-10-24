@@ -1,0 +1,62 @@
+<div class="intro">SOLO 把“这是第几个实例”转化为“哪个位置槽位负责预测它”。理解这一步，才能解释它为什么可以直接预测实例掩码，也才能看清：当许多相似的小目标挤在一起时，位置索引是否仍然足够？本文先说明原文机制与证据，再给出面向密集细胞核的独立分析；后者均为待验证假设。</div>
+<nav class="toc" aria-label="文章目录"><strong>阅读路线</strong><ol>
+<li><a href="#problem">为什么用位置定义实例身份</a></li><li><a href="#mechanism">网格、尺度与完整掩码如何协作</a></li><li><a href="#evidence">哪些实验支持了主张</a></li><li><a href="#dense">密集小目标：先诊断表示，再增加模块</a></li><li><a href="#experiments">可借鉴的消融与尚未解决的问题</a></li><li><a href="#sources">来源与图像说明</a></li>
+</ol></nav>
+
+<h2 id="problem">1. 为什么用位置定义实例身份</h2>
+<p>语义分割的输出通道对应固定语义类别；同一类别中的多个细胞核可以同时出现在前景通道中。实例分割还要保留个体身份，但图像中目标数量不固定，实例 ID 本身也没有跨图像一致的语义。直接把任意标注 ID 当成固定分类通道，会遇到目标排列不确定的问题。</p>
+<p>SOLO 的处理方式，是用中心位置和目标尺度组织预测槽位。位置把实例身份绑定到图像坐标，尺度把目标分配到特征金字塔层。一个槽位预测一个实例掩码及其语义类别，从而获得一套确定的监督索引。这里的“instance category”是位置相关的实例索引，不能和“细胞核类别”混为一谈。原文第 2 节说明了这种表示。<a href="#ref-solo">[1]</a></p>
+<p>这改变了实例生成的入口。Mask R-CNN 从候选框出发，在 RoI 特征中分割；SOLO 从位置槽位出发，直接生成覆盖整幅输出特征图的掩码。两者都可能预测重复实例，因此“box-free”并不意味着没有筛选和抑制步骤。Mask R-CNN 的 RoIAlign 则用于对齐候选区域特征。<a href="#ref-maskrcnn">[4]</a></p>
+<div class="table-wrapper"><table><caption>表示方式比较；“区别”不等于在所有数据上具有性能优势</caption><thead><tr><th>维度</th><th>Mask R-CNN</th><th>SOLO</th></tr></thead><tbody>
+<tr><td>实例索引</td><td>候选框及对应 RoI</td><td>尺度层与位置槽位</td></tr>
+<tr><td>掩码坐标系</td><td>RoI 内的规则网格，再映射回图像</td><td>全图掩码特征坐标系</td></tr>
+<tr><td>核心依赖</td><td>候选定位、RoI 特征与掩码头</td><td>位置条件化、槽位分配与掩码头</td></tr>
+<tr><td>值得诊断的失败</td><td>候选漏检、定位误差及局部掩码质量</td><td>槽位冲突、位置歧义及掩码质量</td></tr>
+</tbody></table></div>
+
+<h2 id="mechanism">2. 网格、尺度与完整掩码如何协作</h2>
+<p>在一个预测层上，SOLO 将图像概念性地划分为 S×S 个网格。类别分支输出 S×S×C，判断各槽位是否存在某个语义类别；vanilla 掩码分支输出 H×W×S²，其中每个通道对应一个位置槽位的二值实例掩码。网格负责选择“谁来预测”，并不把实例轮廓裁剪在那个网格内。原文 Fig. 2–3 展示了这一设计。<a href="#ref-solo">[1]</a></p>
+<figure><a href="../assets/figures/solo/location-slots.svg" aria-label="查看原尺寸示意图"><img src="../assets/figures/solo/location-slots.svg" width="960" height="540" alt="原创示意：相邻目标的中心选择不同网格槽位，各槽位输出全图坐标系下的完整实例掩码。"></a><figcaption>图 1 · 点击图片可查看原尺寸。 原创概念图，依据 SOLO 第 2 节的表示机制绘制，未复制论文图形。虚线网格只用于索引；右侧掩码仍覆盖完整输出画布。来源：<a href="https://arxiv.org/abs/1912.04488">Wang et al., SOLO, ECCV 2020</a>。</figcaption></figure>
+<p>具体训练还使用中心区域正样本分配，并非始终只有中心所在的单个网格为正。因此，同一个实例可由邻近槽位重复预测，再经 NMS 去重。尺度分配也会影响哪些层拥有监督，不能把所有层的网格数直接当成“必然可分离的实例数量”。坐标通道则使共享卷积获得显式位置信息。<a href="#ref-solo">[1]</a></p>
+<div class="formula">语义类别：c ∈ {1, …, C}<br>实例槽位：k = (尺度层 ℓ, 网格行 i, 网格列 j)<br>槽位输出：类别分数 s<sub>k,c</sub> 与完整实例掩码 M<sub>k</sub>(x, y)</div>
+<p><strong>机制分析：</strong>当两个核外观非常接近时，仅靠“这个纹理像核”无法决定某个通道应响应哪一个核。位置索引给监督增加了可区分的条件。但位置仅提供身份线索，仍需图像特征决定边界；坐标本身不能识别两核之间是否存在真实分隔。</p>
+<p>论文另给出 Decoupled SOLO：用行、列两个方向的掩码预测组合减少输出通道。它与 SOLOv2 的动态核分解是不同设计，阅读结果表时应区分 vanilla SOLO、D-SOLO 和 SOLOv2。<a href="#ref-solo">[1]</a></p>
+
+<h2 id="evidence">3. 哪些实验支持了主张</h2>
+<p>下表选取作者公开全文中与机制直接相关的少量结果，均为原文报告，本文未复现。AP 使用 COCO 的百分数尺度；例如 35.8 表示 35.8%，不是细胞核任务中的 AJI 或 PQ。不同表格有不同训练设置，不能把差值简单相加。<a href="#ref-solo">[1]</a></p>
+<div class="table-wrapper"><table><caption>SOLO 实验证据摘录，来源 [1] Table 1–3</caption><thead><tr><th>实验及设置</th><th>原文结果</th><th>支持什么 / 不能说明什么</th></tr></thead><tbody>
+<tr><td>Table 1：COCO test-dev，ResNet-101-FPN，主结果表采用 6×（72 epochs）</td><td>SOLO AP 37.8；增强版 Mask R-CNN* AP 37.8</td><td>支持直接位置分割可获得有竞争力的整体精度；没有证明全面超过框方法。</td></tr>
+<tr><td>Table 2：COCO val2017，单层网格 S=12 / 24 / 36</td><td>AP 27.2 / 29.0 / 28.6</td><td>增加网格并非单调增益；不能把“槽位更多”等同于“分割更好”。</td></tr>
+<tr><td>Table 2：多层 Pyramid 方案</td><td>AP 35.8</td><td>支持这套多层预测设计，但同时改变尺度组织与预测配置，不能视为只增加网格的实验。</td></tr>
+<tr><td>Table 3：0 / 1 层 CoordConv，COCO val2017</td><td>AP 32.2 / 35.8</td><td>支持显式位置条件有用；不能据此推导它已消除密集实例的所有身份歧义。</td></tr>
+</tbody></table></div>
+<p><strong>如何读这些证据：</strong>主结果回答“这个范式能不能工作”，位置编码消融更接近回答“为什么能工作”。而网格实验提醒我们，表示容量、特征质量和优化难度可能共同变化。若把整套多尺度方案的提升全部归因于减少位置碰撞，就超出了实验能够排除的替代解释。</p>
+<p>论文也比较了掩码损失，并讨论了用真值掩码替换预测的诊断实验。值得借鉴的是干预思路：暂时消除某一环节的误差，观察剩余瓶颈。真正使用时，应写清替换规则、匹配方式及是否使用了真值信息，不能把这种诊断结果当成可部署性能。<a href="#ref-solo">[1]</a></p>
+
+<h2 id="dense">4. 密集小目标：先诊断表示，再增加模块</h2>
+<p><strong>以下为本文推论，原文未在细胞核数据上验证。</strong>SOLO 的关键前提可以转成一个可测问题：在给定尺度分配和中心区域规则下，多个真实实例是否争用同一预测槽位？密集且尺度相近的细胞核，可能使这一问题比自然场景更突出，但“密集”本身不能证明实际训练已经发生大量冲突。</p>
+<figure><a href="../assets/figures/solo/slot-conflict.svg" aria-label="查看原尺寸示意图"><img src="../assets/figures/solo/slot-conflict.svg" width="960" height="500" loading="lazy" alt="原创诊断示意：同一尺度的两个实例中心落入同一槽位，单槽位单掩码无法同时承担两个不同身份；更细网格可能缓解但需测量。"></a><figcaption>图 2 · 点击图片可查看原尺寸。 本文提出的槽位冲突诊断图。依据 SOLO 的单槽位输出机制构造的玩具反例，不是论文实验，也不代表实际数据中的冲突比例。来源：SOLO 第 2 节；分析与绘图为本文原创。</figcaption></figure>
+<p>可以先记录每个 GT 实例的全部合法正样本槽位，构造“GT—槽位”二部图。如果有 N 个真实例，而最大匹配只能覆盖 ν 个，那么在“每个 GT 至少占一个专属槽位、每个槽位只能表示一个实例”的理想化假设下，至少有 N−ν 个实例无法获得互不冲突的槽位。这是对分配规则的结构诊断，不是对训练后召回率的严格界：模型也可能从非指定槽位输出候选。</p>
+<div class="note"><strong>这个诊断比单纯统计中心落在同格更稳妥。</strong>中心同格可能因其他中心区域正样本或邻层槽位而仍可区分；最大匹配显式考虑这些替代位置。建议同时报告中心同格率、共享正样本比例、匹配覆盖率，并画出失败样例。</div>
+<p>第二个问题是掩码分辨率。即使两个核拥有不同槽位，它们之间的窄间隙也可能在下采样后变得难以识别。第三个问题是相邻掩码的重叠与筛选：预测边界外扩会使两个真实例看起来像重复预测。因此，槽位可分配性、边界可分性和候选保留率是三个需要分别测量的环节。</p>
+<p>这也解释了为什么很高的前景 Dice 仍可能伴随实例合并。前景覆盖与对象身份是不同目标；对细胞核任务，应同时观察 AJI、PQ、实例级召回，以及 merge / split 错误，而不是直接把 COCO AP 的结论搬到医学图像。</p>
+
+<h2 id="experiments">5. 可借鉴的消融与尚未解决的问题</h2>
+<p>最值得迁移的是“假设—干预—观测”的实验链，而不是某个网格配置。下面的方案均是未来研究建议，尚无实验结果。</p>
+<div class="table-wrapper"><table><thead><tr><th>待检验假设</th><th>控制变量与干预</th><th>观测及替代解释</th></tr></thead><tbody>
+<tr><td>漏检主要来自槽位冲突</td><td>只改变网格密度，保持输入、特征、损失、训练预算一致；另比较同格多候选方案。</td><td>匹配覆盖率、NMS 前实例召回、按核密度分组的漏检。若覆盖提高而召回不变，应检查特征或优化。</td></tr>
+<tr><td>错误主要来自边界信息丢失</td><td>固定槽位分配，对比输出 stride；通道数和算力尽可能匹配，并单列实际开销。</td><td>边界误差、最小核间距分组、merge 率；不能只看总体 Dice。</td></tr>
+<tr><td>显式坐标对身份区分有用</td><td>有 / 无坐标，与网格密度做交叉消融；加入平移、裁剪后的稳定性评估。</td><td>分离能力和域外位置稳健性；防止把数据位置偏置误判为通用机制。</td></tr>
+<tr><td>NMS 误删了相邻真实例</td><td>缓存同一组候选，仅切换筛选规则与阈值。</td><td>NMS 前后召回差、重复率、相邻实例误抑制；控制候选数。</td></tr>
+</tbody></table></div>
+<p>对 CPM17 等小数据集，可以沿用固定 train/test 协议，在训练数据内部完成诊断与超参数选择，避免反复使用 test 选配置；多个随机种子和逐图配对统计有助于判断差异是否稳定。若研究问题强调“密集”，还要报告密度定义、每组样本数和性能分布，避免平均指标掩盖真正困难的区域。</p>
+<p>值得继续追问的是：固定位置槽位如何根据局部密度自适应增加容量？同格多候选怎样避免重复和训练排列歧义？边界不清时，位置身份能否与像素归属约束共同使用？这些都是由表示假设导出的研究问题；是否新颖，仍需额外检索相关工作并验证，不能仅凭本篇经典论文的局限就认定创新成立。</p>
+
+<h2 id="sources">6. 来源与图像说明</h2>
+<ol class="references">
+<li id="ref-solo">Xinlong Wang, Tao Kong, Chunhua Shen, Yuning Jiang, Lei Li. <em>SOLO: Segmenting Objects by Locations.</em> ECCV 2020, pp. 649–665. <a href="https://lileicc.github.io/pubs/wang2020solo.pdf">作者公开全文</a>；<a href="https://doi.org/10.1007/978-3-030-58523-5_38">正式出版 / DOI</a>；<a href="https://arxiv.org/abs/1912.04488">arXiv 与版本记录</a>。机制参见第 2 节及 Fig. 2–3，实验参见 Table 1–4。</li>
+<li><a href="https://www.taokong.org/projects/solo/">作者项目主页</a>与<a href="https://github.com/WXinlong/SOLO">官方 SOLO / SOLOv2 仓库</a>。后者基于较早版本的 MMDetection；“官方开源”不代表当前环境无需适配即可复现。</li>
+<li><a href="https://github.com/WXinlong/SOLO/blob/master/LICENSE">代码许可证</a>标注 non-commercial purposes；不能将代码许可自动视为论文图片许可。SOLO 出版页面列出 Springer Nature 版权及转载许可入口。此次未取得明确原图转载许可，因此只使用独立绘制的概念图，图源审查见 <a href="../assets/figures/sources.json">图片来源记录</a>。</li>
+<li id="ref-maskrcnn">Kaiming He, Georgia Gkioxari, Piotr Dollár, Ross Girshick. <em>Mask R-CNN.</em> ICCV 2017. <a href="https://arxiv.org/abs/1703.06870">论文全文入口</a>。用于对比 RoI、RoIAlign 与实例掩码流程。</li>
+</ol>
+<p class="meta">核验日期：2026-10-24。本文的机制诊断、实验建议与细胞核任务推论不属于原论文结论；未声称已完成实验复现。</p>

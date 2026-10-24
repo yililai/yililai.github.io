@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{{title}} | Yi Li</title>
+  <meta name="description" content="{{description}}">
+  <meta name="author" content="Yi Li">
+  <link rel="stylesheet" href="../assets/css/article.css">
+</head>
+<body>
+<a class="skip-link" href="#article">跳至正文</a>
+<header class="site-header"><div class="navbar">
+  <a class="site-name" href="../index.html">Yi Li</a>
+  <nav class="nav-links" aria-label="主导航">
+    <a href="../index.html#about">About</a><a href="../index.html#research">Research</a><a href="../index.html#publications">Publications</a><a href="../index.html#blog">Blog</a><a href="../index.html#contact">Contact</a>
+  </nav>
+</div></header>
+<main class="article-container" id="article"><article>
+  <div class="eyebrow">Paper Reading · Instance Segmentation · SOLO 系列 {{series}}</div>
+  <h1>{{title}}</h1>
+  <p class="subtitle">{{subtitle}}</p>
+  <p class="meta">Yi Li · {{date}} · 信息核验：{{verified}}</p>
+  <div class="paper-info">
+    <p><strong>论文：</strong>{{paper_title}}</p>
+    <p><strong>作者：</strong>{{authors}}</p>
+    <p><strong>发表状态：</strong><span class="status">{{status}} · {{venue}}</span></p>
+    <p><strong>版本说明：</strong>{{version_note}}</p>
+    <p><a href="{{paper_url}}">论文信息 / arXiv</a> · <a href="{{pdf_url}}">阅读全文 PDF</a> · <a href="{{publication_url}}">正式出版记录</a> · <a href="{{code_url}}">作者官方代码</a></p>
+    <p><strong>代码许可：</strong>{{code_license}}。论文图片的权限另行核验。</p>
+  </div>
+  {{body}}
+  <nav class="article-nav" aria-label="文章导航">{{article_nav}}</nav>
+</article></main>
+<footer>© 2026 Yi Li · 论文精读与研究分析 · Built with GitHub Pages</footer>
+</body>
+</html>

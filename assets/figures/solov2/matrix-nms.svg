@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="960" height="480" viewBox="0 0 960 480" role="img" aria-labelledby="title desc">
+<title id="title">Matrix NMS：候选间并行软抑制</title><desc id="desc">按分数排序，使用上三角 IoU 关系，并考虑抑制者自身已被抑制的情况。</desc>
+<defs><marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="#667b8d"/></marker></defs>
+<style>text{font-family:Arial,'Microsoft YaHei','PingFang SC',sans-serif;fill:#25394b;font-size:22px}.small{font-size:18px;fill:#526879}.title{font-size:27px;font-weight:700}.label{font-size:22px;font-weight:600}.box{fill:#f4f7fb;stroke:#c4d1de;stroke-width:2}.arrow{stroke:#667b8d;stroke-width:2.5;fill:none;marker-end:url(#arrow)}.blue{fill:#5488c7;stroke:#2a5b95;stroke-width:2}.green{fill:#61ac92;stroke:#2d755e;stroke-width:2}</style>
+<rect width="960" height="480" fill="white"/>
+<text x="40" y="48" class="title">Matrix NMS · 处理重复候选，不生成缺失实例</text>
+<text x="60" y="112" class="label">按分数排序的候选</text>
+<rect x="60" y="145" width="224" height="50" rx="6" fill="#dce9f7"/><text x="85" y="178">A：较高分</text>
+<rect x="60" y="210" width="224" height="50" rx="6" fill="#e8eff7"/><text x="85" y="243">B：中间分</text>
+<rect x="60" y="275" width="224" height="50" rx="6" fill="#f0f4f8"/><text x="85" y="308">C：较低分</text>
+<path d="M302 235H365" class="arrow"/>
+<text x="485" y="112" text-anchor="middle" class="label">两两重叠关系</text><rect x="396" y="145" width="59" height="59" fill="#f4f5f6" stroke="white" stroke-width="3"/><text x="425" y="183" text-anchor="middle" class="small">—</text><rect x="455" y="145" width="59" height="59" fill="#dce9f7" stroke="white" stroke-width="3"/><text x="484" y="183" text-anchor="middle" class="small">IoU</text><rect x="514" y="145" width="59" height="59" fill="#dce9f7" stroke="white" stroke-width="3"/><text x="543" y="183" text-anchor="middle" class="small">IoU</text><rect x="396" y="204" width="59" height="59" fill="#f4f5f6" stroke="white" stroke-width="3"/><text x="425" y="242" text-anchor="middle" class="small">—</text><rect x="455" y="204" width="59" height="59" fill="#f4f5f6" stroke="white" stroke-width="3"/><text x="484" y="242" text-anchor="middle" class="small">—</text><rect x="514" y="204" width="59" height="59" fill="#dce9f7" stroke="white" stroke-width="3"/><text x="543" y="242" text-anchor="middle" class="small">IoU</text><rect x="396" y="263" width="59" height="59" fill="#f4f5f6" stroke="white" stroke-width="3"/><text x="425" y="301" text-anchor="middle" class="small">—</text><rect x="455" y="263" width="59" height="59" fill="#f4f5f6" stroke="white" stroke-width="3"/><text x="484" y="301" text-anchor="middle" class="small">—</text><rect x="514" y="263" width="59" height="59" fill="#f4f5f6" stroke="white" stroke-width="3"/><text x="543" y="301" text-anchor="middle" class="small">—</text>
+<path d="M590 235H638" class="arrow"/>
+<rect x="661" y="145" width="244" height="179" rx="9" class="box"/>
+<text x="683" y="186" class="label">计算分数衰减</text><text x="683" y="229">考虑候选间 IoU，</text><text x="683" y="264">并补偿抑制者自身</text><text x="683" y="299">已受压制的情况。</text>
+<text x="60" y="382" class="small">图仅示意关系，未给出实验数值；计算方式详见原文第 2.2 节。</text>
+<text x="60" y="414" class="small">候选矩阵规模约 O(N²)；IoU 构造与衰减计算应分别计时。</text>
+<text x="40" y="461" class="small">原创概念图 · 依据 Wang et al., SOLOv2, NeurIPS 2020 · 非论文原图</text>
+</svg>

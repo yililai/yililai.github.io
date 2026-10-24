@@ -1,0 +1,34 @@
+[
+  {"slug":"fcn","title":"Fully Convolutional Networks for Semantic Segmentation","date":"2026-09-21","category":"Semantic Segmentation","legacy":true},
+  {"slug":"unet","title":"U-Net: Convolutional Networks for Biomedical Image Segmentation","date":"2026-10-24","category":"Biomedical Image Segmentation","legacy":true},
+  {
+    "slug":"solo", "title":"SOLO：用位置定义实例身份", "paper_title":"SOLO: Segmenting Objects by Locations",
+    "subtitle":"从语义分类到位置条件化的实例掩码：表示假设、实验证据与密集目标边界",
+    "description":"SOLO 中文精读：位置与尺度如何定义实例身份，原文消融如何支持核心机制，以及密集细胞核分割中的可验证假设。",
+    "date":"2026-10-24", "verified":"2026-10-24", "category":"Instance Segmentation", "series":"01",
+    "authors":"Xinlong Wang, Tao Kong, Chunhua Shen, Yuning Jiang, Lei Li",
+    "status":"正式发表", "venue":"ECCV 2020",
+    "version_note":"arXiv 首次提交于 2019-12-10；本文对照 ECCV 论文作者公开全文，不与后续期刊扩展版本混用。",
+    "paper_url":"https://arxiv.org/abs/1912.04488",
+    "pdf_url":"https://lileicc.github.io/pubs/wang2020solo.pdf",
+    "publication_url":"https://doi.org/10.1007/978-3-030-58523-5_38",
+    "code_url":"https://github.com/WXinlong/SOLO",
+    "code_license":"仓库 LICENSE 标注 non-commercial purposes；使用与分发前需阅读完整条款",
+    "summary":"用位置与尺度建立实例槽位，结合原文消融分析网格容量、位置敏感性及密集小目标的表示冲突。"
+  },
+  {
+    "slug":"solov2", "title":"SOLOv2：动态掩码生成与 Matrix NMS", "paper_title":"SOLOv2: Dynamic and Fast Instance Segmentation",
+    "subtitle":"把每个实例的完整掩码预测，重写为动态核与共享特征的组合",
+    "description":"SOLOv2 中文精读：动态卷积核、统一高分辨率特征和 Matrix NMS 的机制、实验支持及细胞核实例分割研究启发。",
+    "date":"2026-10-24", "verified":"2026-10-24", "category":"Instance Segmentation", "series":"02",
+    "authors":"Xinlong Wang, Rufeng Zhang, Tao Kong, Lei Li, Chunhua Shen",
+    "status":"正式发表", "venue":"NeurIPS 2020",
+    "version_note":"arXiv 首次提交于 2020-03-23；本文实验数值采用 NeurIPS 2020 正式论文。arXiv 是全文渠道，不代表仅为预印本。",
+    "paper_url":"https://arxiv.org/abs/2003.10152",
+    "pdf_url":"https://proceedings.neurips.cc/paper/2020/file/cd3afef9b8b89558cd56638c3631868a-Paper.pdf",
+    "publication_url":"https://proceedings.neurips.cc/paper/2020/hash/cd3afef9b8b89558cd56638c3631868a-Abstract.html",
+    "code_url":"https://github.com/WXinlong/SOLO",
+    "code_license":"仓库 LICENSE 标注 non-commercial purposes；作者另在 AdelaiDet 提供实现，许可应按实际选用仓库检查",
+    "summary":"拆解动态核、共享掩码特征和 Matrix NMS，区分论文证据与待验证的实例竞争、边界保留假设。"
+  }
+]

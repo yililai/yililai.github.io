@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="960" height="560" viewBox="0 0 960 560" role="img" aria-labelledby="title desc">
+<title id="title">SOLOv2：动态核与共享特征</title><desc id="desc">实例核与共享掩码特征在全图上组合，随后筛选重复候选。</desc>
+<defs><marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="#667b8d"/></marker></defs>
+<style>text{font-family:Arial,'Microsoft YaHei','PingFang SC',sans-serif;fill:#25394b;font-size:22px}.small{font-size:18px;fill:#526879}.title{font-size:27px;font-weight:700}.label{font-size:22px;font-weight:600}.box{fill:#f4f7fb;stroke:#c4d1de;stroke-width:2}.arrow{stroke:#667b8d;stroke-width:2.5;fill:none;marker-end:url(#arrow)}.blue{fill:#5488c7;stroke:#2a5b95;stroke-width:2}.green{fill:#61ac92;stroke:#2d755e;stroke-width:2}</style>
+<rect width="960" height="560" fill="white"/>
+<text x="40" y="48" class="title">SOLOv2 · 实例条件 × 像素表征</text>
+<rect x="45" y="209" width="155" height="100" rx="9" class="box"/><text x="122" y="249" text-anchor="middle" class="label">Backbone</text><text x="122" y="280" text-anchor="middle">+ FPN</text>
+<path d="M200 239H232V154H275" class="arrow"/><path d="M200 279H232V367H275" class="arrow"/>
+<rect x="285" y="101" width="255" height="106" rx="9" fill="#eaf1fa" stroke="#9cb9dc" stroke-width="2"/>
+<text x="412" y="142" text-anchor="middle" class="label">位置条件化核分支</text><text x="412" y="178" text-anchor="middle">Kᵢ：1 × 1 × C</text>
+<rect x="285" y="310" width="255" height="116" rx="9" fill="#eaf6f0" stroke="#9ccab6" stroke-width="2"/>
+<text x="412" y="353" text-anchor="middle" class="label">统一掩码特征分支</text><text x="412" y="390" text-anchor="middle">F：C × H × W</text>
+<path d="M540 153H607V231H637" class="arrow"/><path d="M540 368H607V288H637" class="arrow"/>
+<rect x="647" y="210" width="245" height="102" rx="9" class="box"/>
+<text x="770" y="248" text-anchor="middle" class="label">动态卷积 + sigmoid</text><text x="770" y="282" text-anchor="middle">每个实例的全图掩码</text>
+<path d="M770 312V358" class="arrow"/>
+<rect x="647" y="370" width="245" height="67" rx="9" class="box"/><text x="770" y="413" text-anchor="middle" class="label">Matrix NMS</text>
+<text x="285" y="475" class="small">类别分数与位置筛选省略；动态核不等于只在局部网格分割。</text>
+<text x="40" y="530" class="small">原创概念图 · 依据 Wang et al., SOLOv2, NeurIPS 2020, Sec. 2.1 / Fig. 2</text>
+</svg>

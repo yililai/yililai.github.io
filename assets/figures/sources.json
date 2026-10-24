@@ -1,0 +1,60 @@
+{
+  "policy": "Paper availability and repository code licenses do not establish paper-image reuse rights. Use independently composed diagrams until explicit figure permission is verified.",
+  "permission_review": {
+    "solo": "Springer chapter lists © 2020 Springer Nature Switzerland AG and a permissions request link; explicit permission for blog image reuse not established.",
+    "solov2": "Official proceedings and author repository checked; a figure-specific reuse grant applicable to this blog was not established. This is uncertainty, not a claim that reuse is forbidden.",
+    "code": "WXinlong/SOLO LICENSE begins SOLO for non-commercial purposes; not treated as a license for paper figures.",
+    "reviewed_urls": [
+      "https://link.springer.com/chapter/10.1007/978-3-030-58523-5_38",
+      "https://proceedings.neurips.cc/paper/2020/hash/cd3afef9b8b89558cd56638c3631868a-Abstract.html",
+      "https://github.com/WXinlong/SOLO/blob/master/LICENSE",
+      "https://www.taokong.org/projects/solo/"
+    ]
+  },
+  "figures": [
+    {
+      "file": "solo/location-slots.svg",
+      "type": "original-concept-diagram",
+      "creator": "Created for Yi Li academic blog with AI assistance",
+      "based_on": "SOLO, Sec. 2",
+      "source_url": "https://arxiv.org/abs/1912.04488",
+      "reproduced_paper_artwork": false,
+      "third_party_image_permission": "not relied upon; independently composed vector diagram",
+      "reuse_license": "No additional license granted by this record",
+      "verified": "2026-10-24"
+    },
+    {
+      "file": "solo/slot-conflict.svg",
+      "type": "original-concept-diagram",
+      "creator": "Created for Yi Li academic blog with AI assistance",
+      "based_on": "SOLO, Sec. 2",
+      "source_url": "https://arxiv.org/abs/1912.04488",
+      "reproduced_paper_artwork": false,
+      "third_party_image_permission": "not relied upon; independently composed vector diagram",
+      "reuse_license": "No additional license granted by this record",
+      "verified": "2026-10-24"
+    },
+    {
+      "file": "solov2/dynamic-mask.svg",
+      "type": "original-concept-diagram",
+      "creator": "Created for Yi Li academic blog with AI assistance",
+      "based_on": "SOLOv2, Sec. 2.1 / 2.2",
+      "source_url": "https://arxiv.org/abs/2003.10152",
+      "reproduced_paper_artwork": false,
+      "third_party_image_permission": "not relied upon; independently composed vector diagram",
+      "reuse_license": "No additional license granted by this record",
+      "verified": "2026-10-24"
+    },
+    {
+      "file": "solov2/matrix-nms.svg",
+      "type": "original-concept-diagram",
+      "creator": "Created for Yi Li academic blog with AI assistance",
+      "based_on": "SOLOv2, Sec. 2.1 / 2.2",
+      "source_url": "https://arxiv.org/abs/2003.10152",
+      "reproduced_paper_artwork": false,
+      "third_party_image_permission": "not relied upon; independently composed vector diagram",
+      "reuse_license": "No additional license granted by this record",
+      "verified": "2026-10-24"
+    }
+  ]
+}
