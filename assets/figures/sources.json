@@ -147,6 +147,87 @@
       "used_in_current_articles": true,
       "verified": "2026-10-24",
       "sha256": "f585bd6f4550c9b8d4f05117a186e6cade2fa96c11e03b002665e1800beb9ae4"
+    },
+    {
+      "file": "upsampling/01-nearest.svg",
+      "type": "original-numerical-diagram",
+      "creator": "Yi Li academic blog, produced with AI assistance",
+      "source_url": "https://docs.pytorch.org/docs/stable/generated/torch.nn.functional.interpolate.html",
+      "additional_sources": [],
+      "reproduced_paper_artwork": false,
+      "reuse_license": "Original teaching diagram; no additional license granted by this record",
+      "changes": "Independently composed SVG with computed numerical examples; no paper artwork copied. CARAFE and transpose-convolution example kernels are illustrative, not trained predictions.",
+      "verified": "2026-11-10",
+      "used_in_current_articles": true,
+      "sha256": "16d1df35ca6e0c323f032c0fbfa97b0918117e2aa222b71bc3de9ae9adb9db71"
+    },
+    {
+      "file": "upsampling/02-bilinear-grid.svg",
+      "type": "original-numerical-diagram",
+      "creator": "Yi Li academic blog, produced with AI assistance",
+      "source_url": "https://docs.pytorch.org/docs/stable/generated/torch.nn.functional.interpolate.html",
+      "additional_sources": [],
+      "reproduced_paper_artwork": false,
+      "reuse_license": "Original teaching diagram; no additional license granted by this record",
+      "changes": "Independently composed SVG with computed numerical examples; no paper artwork copied. CARAFE and transpose-convolution example kernels are illustrative, not trained predictions.",
+      "verified": "2026-11-10",
+      "used_in_current_articles": true,
+      "sha256": "452bfc59f97f48505dff2cc664c5102bed214b2e00ee586a896caa8bee494ca6"
+    },
+    {
+      "file": "upsampling/03-bilinear-one-pixel.svg",
+      "type": "original-numerical-diagram",
+      "creator": "Yi Li academic blog, produced with AI assistance",
+      "source_url": "https://docs.pytorch.org/docs/stable/generated/torch.nn.functional.interpolate.html",
+      "additional_sources": [],
+      "reproduced_paper_artwork": false,
+      "reuse_license": "Original teaching diagram; no additional license granted by this record",
+      "changes": "Independently composed SVG with computed numerical examples; no paper artwork copied. CARAFE and transpose-convolution example kernels are illustrative, not trained predictions.",
+      "verified": "2026-11-10",
+      "used_in_current_articles": true,
+      "sha256": "18fff0cf5fe680694a4c6bd9ae8a5fb69b5c784efa174e825d6fa4417bc0111b"
+    },
+    {
+      "file": "upsampling/04-carafe-flow.svg",
+      "type": "original-numerical-diagram",
+      "creator": "Yi Li academic blog, produced with AI assistance",
+      "source_url": "https://arxiv.org/abs/1905.02188",
+      "additional_sources": [],
+      "reproduced_paper_artwork": false,
+      "reuse_license": "Original teaching diagram; no additional license granted by this record",
+      "changes": "Independently composed SVG with computed numerical examples; no paper artwork copied. CARAFE and transpose-convolution example kernels are illustrative, not trained predictions.",
+      "verified": "2026-11-10",
+      "used_in_current_articles": true,
+      "sha256": "50d2c968bfc370f5dcd72688416f62eead3401d2d7fca55783d48305933d5593"
+    },
+    {
+      "file": "upsampling/05-carafe-one-pixel.svg",
+      "type": "original-numerical-diagram",
+      "creator": "Yi Li academic blog, produced with AI assistance",
+      "source_url": "https://arxiv.org/abs/1905.02188",
+      "additional_sources": [],
+      "reproduced_paper_artwork": false,
+      "reuse_license": "Original teaching diagram; no additional license granted by this record",
+      "changes": "Independently composed SVG with computed numerical examples; no paper artwork copied. CARAFE and transpose-convolution example kernels are illustrative, not trained predictions.",
+      "verified": "2026-11-10",
+      "used_in_current_articles": true,
+      "sha256": "a708e78968993b731bffc7821f0200262808a1f8299b7a2ae6b7d21836317dc7"
+    },
+    {
+      "file": "upsampling/06-other-operators.svg",
+      "type": "original-numerical-diagram",
+      "creator": "Yi Li academic blog, produced with AI assistance",
+      "source_url": "https://docs.pytorch.org/docs/stable/generated/torch.nn.functional.interpolate.html",
+      "additional_sources": [
+        "https://docs.pytorch.org/docs/stable/generated/torch.nn.ConvTranspose2d.html",
+        "https://docs.pytorch.org/docs/stable/generated/torch.nn.PixelShuffle.html"
+      ],
+      "reproduced_paper_artwork": false,
+      "reuse_license": "Original teaching diagram; no additional license granted by this record",
+      "changes": "Independently composed SVG with computed numerical examples; no paper artwork copied. CARAFE and transpose-convolution example kernels are illustrative, not trained predictions.",
+      "verified": "2026-11-10",
+      "used_in_current_articles": true,
+      "sha256": "ab46de888f333166bc1a775875b7e8018aaf3d29efef67d17a1d7a3d7008e22f"
     }
   ]
 }

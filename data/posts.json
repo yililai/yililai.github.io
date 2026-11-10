@@ -54,5 +54,21 @@
     "code_url": "https://github.com/WXinlong/SOLO",
     "code_license": "仓库 LICENSE 标注 non-commercial purposes；作者另在 AdelaiDet 提供实现，许可应按实际选用仓库检查",
     "summary": "对照 SOLO 与 SOLOv2 原图，看懂动态核、统一掩码特征和 Matrix NMS 的分工。"
+  },
+  {
+    "slug": "upsampling",
+    "title": "上采样图解：最近邻、双线性与 CARAFE",
+    "subtitle": "同一张 2×2 特征图，逐格看懂新值怎样产生",
+    "description": "用完整矩阵和逐像素演算比较最近邻、双线性插值与CARAFE，补充双三次、转置卷积和Pixel Shuffle的机制与原始出处。",
+    "date": "2026-11-10",
+    "verified": "2026-11-10",
+    "category": "Feature Upsampling",
+    "status": "方法图解",
+    "venue": "基础方法",
+    "template": "topic.html",
+    "pdf_url": "https://openaccess.thecvf.com/content_ICCV_2019/papers/Wang_CARAFE_Content-Aware_ReAssembly_of_FEatures_ICCV_2019_paper.pdf",
+    "code_url": "https://github.com/myownskyW7/CARAFE",
+    "reference_url": "https://docs.pytorch.org/docs/stable/generated/torch.nn.functional.interpolate.html",
+    "summary": "用同一个 2×2→4×4 例子，逐步看懂复制、距离加权和内容相关重组，并对照常见上采样方法的出处。"
   }
 ]

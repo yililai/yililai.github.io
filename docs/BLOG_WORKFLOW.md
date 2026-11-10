@@ -5,6 +5,7 @@
 - 永久网址使用 `blog/<slug>.html`，slug 为小写英文 kebab-case，如 `solov2`。已发表的网址不改名；确需迁移先保留旧入口。
 - `content/<slug>.html` 保存正文，`data/posts.json` 保存作者、标题、日期、发表状态、版本、论文与代码链接；`templates/article.html` 和 `assets/css/article.css` 统一新文章结构和排版。
 - `blog/solo.html` 与 `blog/solov2.html` 是生成结果，正文修改应在 `content/` 中完成；修改后重新生成并一起提交。
+- 多方法专题可在元数据设置 `template: "topic.html"`，避免套用单篇论文或 SOLO 系列的作者、发表状态和图片许可。`blog/upsampling.html` 为图解方法专题；其原创演算图由 `python scripts/draw_upsampling.py` 生成。
 - FCN、U-Net 是既有手写文章，标记为 `legacy: true`，生成器不写入这些文件。原正文、独立样式和网址全部保留。若之后迁入新模板，必须人工审查完整正文差异，不能用摘要重写旧文。
 - 首页 `BLOG:AUTO:START` 到 `BLOG:AUTO:END` 之间为新增文章自动目录。原有两条文章目录和首页其他区域不由脚本重建。
 - 图片统一使用 `assets/figures/<slug>/`。每张图在 `assets/figures/sources.json` 记录原始来源、创作类型、许可核验结果和日期。新文章图片可点击查看原尺寸。

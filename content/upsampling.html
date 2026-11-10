@@ -1,0 +1,54 @@
+<div class="intro"><strong>上采样要解决的事：</strong>把一张较小的特征图变大。真正的区别是<strong>新位置的值从哪里来、权重由谁决定</strong>。下面始终从同一个 2×2 数值例子出发。</div>
+
+<h2 id="nearest">1. 最近邻：把附近的值复制过来</h2>
+<p>把单通道特征 <strong>10、20 / 30、40</strong> 放大两倍。最近邻不做平均；在这个整数倍例子里，每个原值直接重复到一个 2×2 区域。一般尺寸变化时，则按坐标映射选择最近的样本。</p>
+<figure><a href="../assets/figures/upsampling/01-nearest.svg" aria-label="放大最近邻数值图"><img src="../assets/figures/upsampling/01-nearest.svg" width="960" height="560" alt="同一2×2矩阵最近邻放大为4×4，原值各重复四次；索引1,2的输出是20。"></a><figcaption>图 1 · 原创数值演示；点击放大。最近邻可等价写成“选中一个值的权重为 1，其余为 0”，但实际实现可以直接取值。</figcaption></figure>
+<p><strong>特点：</strong>简单、保留原有数值，但放大图像容易出现块状边缘。缩放离散类别标签或实例 ID 图时，通常用最近邻，避免把不同 ID 平均成新编号。<a href="#ref-interpolation">[1]</a></p>
+
+<h2 id="bilinear">2. 双线性：先确定新位置，再按距离混合</h2>
+<p>图像不是把 22.5“塞进原矩阵”。程序先建立新的 <strong>4×4 输出网格</strong>，再逐格计算它的值。本例采用 <code>align_corners=False</code>：输出列 j 对应输入坐标 <code>x=(j+0.5)/2−0.5</code>，纵向同理；索引从 0 开始。<a href="#ref-interpolation">[1]</a></p>
+<figure><a href="../assets/figures/upsampling/02-bilinear-grid.svg" aria-label="放大双线性坐标与完整矩阵"><img src="../assets/figures/upsampling/02-bilinear-grid.svg" width="960" height="710" loading="lazy" alt="输出四列映射到输入坐标负0.25、0.25、0.75、1.25；边界使用边缘值，展示全部16个双线性输出。"></a><figcaption>图 2 · 原创演算。超出输入中心范围的坐标使用边界值；纵向也用相同规则，因此可以算出全部 16 格。</figcaption></figure>
+<p>只看输出<strong>第 2 行、第 3 列</strong>，即索引 <code>[1,2]</code>：它映射到输入 <code>(x,y)=(0.75,0.25)</code>。横向距左边 0.75、距右边 0.25，所以左权重 0.25、右权重 0.75；纵向则是上 0.75、下 0.25。</p>
+<figure><a href="../assets/figures/upsampling/03-bilinear-one-pixel.svg" aria-label="放大22.5的逐步计算"><img src="../assets/figures/upsampling/03-bilinear-one-pixel.svg" width="960" height="610" loading="lazy" alt="先横向计算17.5和37.5，再纵向得到22.5；四角权重分别0.1875、0.5625、0.0625、0.1875。"></a><figcaption>图 3 · 原创演算。先做两次横向线性插值，再做一次纵向线性插值；22.5 写入新矩阵的索引 [1,2]。</figcaption></figure>
+<div class="takeaway"><strong>“权重固定”指不依赖图像内容。</strong>输入、输出尺寸和坐标约定确定后，该位置的权重就确定了；不同位置可以有不同权重。更换像素值不会改变这组系数。</div>
+<details class="paper-info"><summary>为什么换一个设置，4×4 的数字就变了？</summary><p><code>align_corners=True</code> 时，输入、输出角点的像素中心对齐：本例横向坐标变为 0、1/3、2/3、1。两种约定都可用，但得到的数值不同。复现实验应同时注明输出尺寸、模式、对齐设置和边界处理。最近邻的具体取整规则在不同实现之间也可能有差别；本例整数倍放大不受该区别影响。</p></details>
+
+<h2 id="carafe">3. CARAFE：根据内容预测权重，再重组原特征</h2>
+<p><strong>CARAFE = Content-Aware ReAssembly of FEatures</strong>，由 Jiaqi Wang 等发表于 ICCV 2019。它不只看“距离多远”，还用一个小网络读取附近的特征，预测每个新位置该怎样混合邻域。<a href="#ref-carafe">[2]</a></p>
+<figure><a href="../assets/figures/upsampling/04-carafe-flow.svg" aria-label="放大CARAFE权重预测与特征重组过程"><img src="../assets/figures/upsampling/04-carafe-flow.svg" width="960" height="570" loading="lazy" alt="1×1卷积压缩通道，内容编码卷积预测四套九项分数，各套softmax归一化后加权重组原始邻域特征。"></a><figcaption>图 4 · 依据 CARAFE 第 3 节绘制的原创流程图。为便于手算，重组核设为 3×3；原论文常用 5×5 重组核、3×3 内容编码核。两者承担不同任务。</figcaption></figure>
+<p><strong>“根据内容预测”具体是什么？</strong>内容编码卷积把局部特征乘以训练得到的参数、求和并加偏置，输出一组分数，再经 softmax 变成权重。固定的是预测网络的参数；输入内容变了，输出权重可以跟着变。它也不等于“哪个像素值大，就自动给谁更高权重”。</p>
+<p>放大两倍时，一个原位置对应 4 个新位置。本例每个新位置需要 9 个权重，因此编码器在每个原位置输出 <strong>4×9=36 个分数</strong>；重排后，<strong>每个新位置的 9 项独立归一化</strong>，不是把全部 36 项放在一起归一化。图中只展示一个通道，实际预测可读取多通道特征。<a href="#ref-carafe">[2]</a></p>
+<figure><a href="../assets/figures/upsampling/05-carafe-one-pixel.svg" aria-label="放大CARAFE示意核的数值计算"><img src="../assets/figures/upsampling/05-carafe-one-pixel.svg" width="960" height="580" loading="lazy" alt="同一输入和目标输出位置，取以输入值20为中心的零填充3×3邻域，使用示意权重得到20.5。"></a><figcaption>图 5 · 同一目标输出 [1,2]，其 CARAFE 源位置为 [0,1]。邻域越界处零填充；核为手设教学示例，<strong>不是训练模型的预测</strong>。没有训练好的核预测器，就不能给出确定的 CARAFE 4×4 结果。</figcaption></figure>
+<div class="takeaway"><strong>区别在权重来源，不在 20.5 是否比 22.5 更好。</strong>这个例子只说明计算过程；实际核由下游任务的损失训练。默认 CARAFE 保持通道数，主要在空间邻域中重组特征。</div>
+
+<h2 id="others">4. 其他常用上采样：还有哪些路线？</h2>
+<p><strong>双三次插值（Bicubic）</strong>用邻近 4×4 个样本做三次核加权，比双线性使用的邻域更大；权重仍由坐标与预设核决定。它可能更平滑，也可能过冲，不能把“更平滑”直接等同于“分割更准确”。Keys 的 1981 年论文是经典参考，不是把所有三次插值都归为该文首次提出。<a href="#ref-keys">[3]</a></p>
+<figure><a href="../assets/figures/upsampling/06-other-operators.svg" aria-label="放大转置卷积与Pixel Shuffle数值示意"><img src="../assets/figures/upsampling/06-other-operators.svg" width="960" height="640" loading="lazy" alt="一维转置卷积将10和20分别展开并重叠相加；Pixel Shuffle将四个通道值重排为2×2空间位置。"></a><figcaption>图 6 · 原创机制简例。上半部分改用一维输入，以便看清展开与相加；下半部分展示四个单像素通道的重排。示意核不代表训练权重。</figcaption></figure>
+<p><strong>转置卷积</strong>使用可学习卷积核展开输入、在重叠处相加；训练后通常仍在不同图像和位置共享同一套核。它不是普通卷积的真实逆运算。<strong>Pixel Shuffle</strong>则把通道数换成空间分辨率，重排本身没有参数，前面的卷积负责生成通道值；代表工作是 Shi 等的 ESPCN（CVPR 2016）。这两类属于上采样，但不等同于传统插值。<a href="#ref-learned">[4]</a></p>
+
+<h2 id="summary">5. 对照着记：谁决定新值？</h2>
+<div class="table-wrapper"><table><caption>机制比较，不是性能排名</caption><thead><tr><th>方法</th><th>新值如何产生</th><th>权重 / 参数来源</th><th>出处或代表资料</th></tr></thead><tbody>
+<tr><td>最近邻</td><td>选一个邻近值</td><td>坐标映射，无训练参数</td><td>传统插值；<a href="https://docs.opencv.org/4.x/da/d54/group__imgproc__transform.html">OpenCV 文档</a></td></tr>
+<tr><td>双线性</td><td>四邻点加权</td><td>几何距离；每位置可不同</td><td>传统插值；<a href="https://docs.pytorch.org/docs/stable/generated/torch.nn.functional.interpolate.html">PyTorch 文档</a></td></tr>
+<tr><td>双三次</td><td>通常 4×4 邻域加权</td><td>坐标与预设三次核</td><td><a href="https://doi.org/10.1109/TASSP.1981.1163711">Keys, 1981</a></td></tr>
+<tr><td>转置卷积</td><td>卷积核展开、重叠相加</td><td>训练得到，通常全图共享</td><td><a href="https://arxiv.org/abs/1411.4038">FCN, CVPR 2015</a>：代表应用，非起源声明</td></tr>
+<tr><td>Pixel Shuffle</td><td>通道 → 空间重排</td><td>重排无参数；前置卷积可学习</td><td><a href="https://openaccess.thecvf.com/content_cvpr_2016/html/Shi_Real-Time_Single_Image_CVPR_2016_paper.html">ESPCN, CVPR 2016</a></td></tr>
+<tr><td>CARAFE</td><td>预测空间核，再加权重组</td><td>预测网络可学习；核随内容变化</td><td><a href="https://arxiv.org/abs/1905.02188">CARAFE, ICCV 2019</a></td></tr>
+</tbody></table></div>
+<p><strong>最近邻、双线性是传统数值方法，不是出自某篇深度学习论文。</strong>上表将“方法原始论文”“经典参考”和“代表应用”分开标明，避免把使用过某种算子的网络当作算子发明者。</p>
+<div class="comparison-pair"><div><span class="step-label">几何规则</span><p><strong>最近邻：</strong>取一个值。<br><strong>双线性：</strong>按距离混合四个值。</p></div><div><span class="step-label">内容相关</span><p><strong>CARAFE：</strong>先让网络预测怎么混合，再对原邻域加权求和。</p></div></div>
+<p class="closing-note"><strong>一句话总结：</strong>上采样先建立更密的输出网格，再决定每格的值。几何插值按位置算，学习式方法靠训练；CARAFE 进一步让混合权重随当前内容变化。放大空间尺寸，不保证恢复所有已经丢失的细节。</p>
+
+<details class="paper-info"><summary>最短复现：最近邻与双线性的完整 4×4 数值</summary><pre><code>import torch
+import torch.nn.functional as F
+x = torch.tensor([[[[10., 20.], [30., 40.]]]])
+print(F.interpolate(x, size=(4, 4), mode="nearest")[0, 0])
+print(F.interpolate(x, size=(4, 4), mode="bilinear",
+                    align_corners=False)[0, 0])</code></pre><p>SVG 数值由本站脚本计算并校验；这段代码给出对应的 PyTorch 复现方式。CARAFE 还需要训练好的预测网络，不能只给输入就确定输出。</p></details>
+<details class="paper-info" id="references"><summary>论文全文、实现与图源</summary><ol class="references">
+<li id="ref-interpolation">插值定义与坐标约定：<a href="https://docs.pytorch.org/docs/stable/generated/torch.nn.functional.interpolate.html">PyTorch interpolate</a>、<a href="https://docs.opencv.org/4.x/da/d54/group__imgproc__transform.html">OpenCV Geometric Image Transformations</a>。正文数值固定采用 2×2→4×4、双线性半像素约定与边界值延拓。</li>
+<li id="ref-carafe">Jiaqi Wang, Kai Chen, Rui Xu, Ziwei Liu, Chen Change Loy, Dahua Lin. <em>CARAFE: Content-Aware ReAssembly of FEatures.</em> ICCV 2019，正式发表。<a href="https://openaccess.thecvf.com/content_ICCV_2019/papers/Wang_CARAFE_Content-Aware_ReAssembly_of_FEatures_ICCV_2019_paper.pdf">正式全文</a> · <a href="https://arxiv.org/abs/1905.02188">arXiv</a> · <a href="https://github.com/myownskyW7/CARAFE">作者官方 CUDA 实现</a> · <a href="https://mmcv.readthedocs.io/en/latest/api/generated/mmcv.ops.CARAFEPack.html">MMCV CARAFEPack</a>。机制参照第 3 节。</li>
+<li id="ref-keys">R. G. Keys. <em>Cubic Convolution Interpolation for Digital Image Processing.</em> IEEE Transactions on Acoustics, Speech, and Signal Processing, 29(6):1153–1160, 1981。<a href="https://doi.org/10.1109/TASSP.1981.1163711">DOI</a>。</li>
+<li id="ref-learned">学习式上采样：<a href="https://docs.pytorch.org/docs/stable/generated/torch.nn.ConvTranspose2d.html">PyTorch ConvTranspose2d</a>；Long et al., <a href="https://arxiv.org/abs/1411.4038">Fully Convolutional Networks for Semantic Segmentation, CVPR 2015</a>；Shi et al., <a href="https://openaccess.thecvf.com/content_cvpr_2016/papers/Shi_Real-Time_Single_Image_CVPR_2016_paper.pdf">Real-Time Single Image and Video Super-Resolution Using an Efficient Sub-Pixel Convolutional Neural Network, CVPR 2016</a>；<a href="https://docs.pytorch.org/docs/stable/generated/torch.nn.PixelShuffle.html">PixelShuffle 文档</a>。</li>
+<li>六张数值图均为本站原创，未复制论文图形。CARAFE 核与转置卷积核是教学示例，不是论文实验或模型输出。<a href="../assets/figures/sources.json">逐图来源记录</a> · <a href="../assets/figures/upsampling/example-values.json">演算数值</a>。核验日期：2026-11-10。</li>
+</ol></details>
